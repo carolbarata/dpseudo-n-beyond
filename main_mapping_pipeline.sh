@@ -203,19 +203,19 @@ then
 	SAMFILE="${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.sam.gz"
 	TESTSAM=$( head -c 1 < <(zcat "${SAMFILE}") )
 	[ -s "${SAMFILE}" -a "${TESTSAM}" == "@" ] && echo "Looks like some reads got mapped okay." || echo "Mapping seems to have gone wrong, oops."
-	SAMFILE=${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.sam.gz
 fi
 
 #### (3) Realign around indels and compute mapping stats
 # Parses a sam file
 # realigns around indels using GATK
 # and computes mapping stats using samtools
+SAMSAMPLENAME=$(echo ${SAMFILE%\.sam.gz} | grep -oE '[^/]+' | tail -n1)
 ${PIPEDIR}parsing_mapped_reads_with_samtools.sh \
 -d ${SAMTOOLSDIR} \
 -g ${GATKDIR} \
 -j ${JAVA18DIR} \
 -b ${SAMBAMBADIR} \
--s ${SAMPLENAME} \
+-s ${SAMSAMPLENAME} \
 -i ${SAMFILE} \
 -r ${REFDIR}/${UNZIPREF} \
 -u ${USETRIMMED} \
@@ -225,39 +225,26 @@ ${PIPEDIR}parsing_mapped_reads_with_samtools.sh \
 ${PIPEDIR}mapq_from_samfiles.sh \
 -d ${SAMTOOLSDIR} \
 -i ${SAMFILE} \
--o ${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.mapq
+-o ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq
 
 # R-script to plot coverage (aka sequencing depth)
 Rscript --vanilla ${PIPEDIR}coverage_distn_plot.R \
-${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.nodup.sorted.bam.depth \
-${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.depth.png
+${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.nodup.sorted.bam.depth \
+${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.depth.png
 
-        [ -s "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.mapq" -a -s "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.depth.png" ] && echo "Wonderful, parsing seems to have gone just right." || echo "Hmm, something seems to have gone wrong. Please check why your mapped reads havent been parsed correctly."
+        [ -s "${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq" -a -s "${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.depth.png" ] && echo "Wonderful, parsing seems to have gone just right." || echo "Hmm, something seems to have gone wrong. Please check why your mapped reads havent been parsed correctly."
 
 
-if [ ${USETRIMMED} = "TRUE" ];
+if [ ${USETRIMMED} = "TRUE" ] && [ ${BWADIR} != "NA" ] || [ ${NOVOALIGNDIR} != "NA" ];
 then
 	#### (3.1) Compare with raw data mapping stats - OPTIONAL
 	### (3.1.1) Compare number of mapped reads before/after trimming
-	if [ ${BWADIR} != "NA" ];
-	then
-	RAW_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.sam.gz)
-	TRIM_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.sam.gz)
-	echo "${SAMPLENAME},${RAW_MAPPED},${TRIM_MAPPED}" > ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.mappedreads
+	RAW_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${SAMFILE})
+	TRIM_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${SAMFILE})
+	echo "${SAMPLENAME},${RAW_MAPPED},${TRIM_MAPPED}" > ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mappedreads
 	### (3.1.2) Compare mapping quality scores before/after trimming
         Rscript --vanilla ${PIPEDIR}raw_vs_trimmed_mapped_read_distn_plot.R \
-        ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.mapq \
-        ${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.mapq \
-        ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.mapq.png
-	elif [ ${NOVOALIGNDIR} != "NA" ];
-	then
-	RAW_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}_novoalign.sam.gz)
-        TRIM_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.sam.gz)
-        echo "${SAMPLENAME},${RAW_MAPPED},${TRIM_MAPPED}" > ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}_novoalign.mappedreads
-	### (3.1.2) Compare mapping quality scores before/after trimming
-	Rscript --vanilla ${PIPEDIR}raw_vs_trimmed_mapped_read_distn_plot.R \
-	${OUTDIR}${SAMPLENAME}/${SAMPLENAME}_novoalign.mapq \
-	${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.mapq \
-	${OUTDIR}${SAMPLENAME}/${SAMPLENAME}_novoalign.mapq.png
-	fi
+        ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq \
+        ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq \
+        ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq.png
 fi
