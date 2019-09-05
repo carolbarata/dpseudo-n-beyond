@@ -219,7 +219,7 @@ ${PIPEDIR}parsing_mapped_reads_with_samtools.sh \
 -i ${SAMFILE} \
 -r ${REFDIR}/${UNZIPREF} \
 -u ${USETRIMMED} \
--o ${OUTDIR}
+-o ${OUTDIR}${SAMPLENAME}
 
 # Extracts mapping quality score using samtools
 ${PIPEDIR}mapq_from_samfiles.sh \
