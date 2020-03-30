@@ -14,33 +14,32 @@ NB: includes both shell, R and python scripts
 
 This pipeline requires installing the following software:
 ```
-    Trimmomatic-0.38
-    FastQC
-    bwa-0.7.17
-    novoalign
-    java - jdk1.8.0_191
-    samtools-1.9
-    GenomeAnalysisTK-3.8.1
-    sambamba
-    bcftools
-    bgzip
-    freebayes
-    python3 or higher (including pandas library)  
+  Trimmomatic-0.38
+  FastQC
+  bwa-0.7.17
+  novoalign
+  java - jdk1.8.0_191
+  samtools-1.9
+  GenomeAnalysisTK-3.8.1
+  sambamba
+  bcftools
+  bgzip
+  freebayes
+  python3 or higher (including pandas library)  
 ```
 
 ### Mapping
 
-    S: `full_mapping_newref_submissionscript.sh`
-	M: `main_mapping_pipeline.sh`
-		`trim_raw_reads_with_trimmomatic.sh #trims raw reads w/ Trimmomatic`
-		`get_initial_and_trimmed_read_number.sh #counts no. of reads lost after trimming`
-		`get_initial_and_trimmed_read_lengths.sh #fetches read length distns before&after trimming`
-		`raw_vs_trimmed_read_length_plot.R #plots read length distns`
-		`parsing_mapped_reads_with_samtools.sh #parses sam file, realigns reads around indels, computes mapping stats`
-		`mapq_from_samfiles.sh #extracts mapping quality from sam file`
-		`coverage_distn_plot.R #plots read coverage distn`
-		`raw_vs_trimmed_mapped_read_distn_plot.R #plots raw vs trimmed alignment qual scores`
-
+S: `full_mapping_newref_submissionscript.sh`
+M: `main_mapping_pipeline.sh`
+	`trim_raw_reads_with_trimmomatic.sh #trims raw reads w/ Trimmomatic`
+	`get_initial_and_trimmed_read_number.sh #counts no. of reads lost after trimming`
+	`get_initial_and_trimmed_read_lengths.sh #fetches read length distns before&after trimming`
+	`raw_vs_trimmed_read_length_plot.R #plots read length distns`
+	`parsing_mapped_reads_with_samtools.sh #parses sam file, realigns reads around indels, computes mapping stats`
+	`mapq_from_samfiles.sh #extracts mapping quality from sam file`
+	`coverage_distn_plot.R #plots read coverage distn`
+	`raw_vs_trimmed_mapped_read_distn_plot.R #plots raw vs trimmed alignment qual scores`
 ```
 $ ./main_mapping_pipeline.sh -h
     main_mapping_pipeline.sh [-h] [-i1 -i2 -u -dt -df -dm -dn -ds -dg -i -r -o] -- where:
@@ -64,9 +63,8 @@ $ ./main_mapping_pipeline.sh -h
 
 ### Variant calling
 
-    S: `snp_calling_submissionscript.sh`
-	M: `main_snp_calling_pipeline.sh`
-
+S: `snp_calling_submissionscript.sh`
+M: `main_snp_calling_pipeline.sh`
 ```
 $ ./main_snp_calling_pipeline.sh
     main_snp_calling_pipeline.sh [-h] [-id -b -s -fb -f -o -r -i] -- where:
@@ -84,9 +82,8 @@ $ ./main_snp_calling_pipeline.sh
 
 ### Extract relevant info from VCFs
 
-    S: `data_extracting_submissionscript.sh`
-	M: `main_data_extracting_pipeline.sh`
-
+S: `data_extracting_submissionscript.sh`
+M: `main_data_extracting_pipeline.sh`
 ```
 $ ./main_data_extracting_pipeline.sh -h
     main_data_extracting_pipeline.sh [-h] [-id -b -s -fb -f -o -r -i] -- where:
@@ -101,17 +98,16 @@ $ ./main_data_extracting_pipeline.sh -h
 
 ### Annotate SNP data files with chromosome names
 
-    S/M: `chromosome_name_annotation_submissionscript.sh`
+S/M: `chromosome_name_annotation_submissionscript.sh`
 
 ### Subsetting data into chromosome level files
 
-	S/M: `data_subsetting_submissionscript.sh`
+S/M: `data_subsetting_submissionscript.sh`
 
 ### Filter and intersect bwa/novoalign data
 
-	S: `data_filtering_submissionscript.sh`
-	M: `main_sample_snp_filtering_pipeline.py`
-
+S: `data_filtering_submissionscript.sh`
+M: `main_sample_snp_filtering_pipeline.py`
 ```
 $ python3 ./main_sample_snp_filtering_pipeline.py -h
 usage: main_sample_snp_filtering_pipeline.py [-h] -b B -n N -t T -s S -o O
@@ -135,9 +131,8 @@ optional arguments:
 	
 ### Intersect SNPs across replicates & time points #future commit
 
-	S: `data_intersecting_submissionscript.sh`
-	M: `main_sample_intersecting_pipeline.py`
-
+S: `data_intersecting_submissionscript.sh`
+M: `main_sample_intersecting_pipeline.py`
 ```
 $ python3 ./main_sample_intersecting_pipeline.py -h
 usage: main_sample_intersecting_pipeline.py [-h] -f F -r R -g G -c C -o O -q Q
