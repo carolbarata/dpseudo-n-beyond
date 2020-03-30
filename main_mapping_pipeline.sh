@@ -185,7 +185,7 @@ then
 	then
 		${BWADIR}bwa index ${REFGENOME}
 	fi
-	#${BWADIR}bwa mem ${REFGENOME} ${FASTQFILE1} ${FASTQFILE2} | gzip > "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.sam.gz"
+	${BWADIR}bwa mem ${REFGENOME} ${FASTQFILE1} ${FASTQFILE2} | gzip > "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.sam.gz"
 	SAMFILE=${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}.sam.gz
 	TESTSAM=$( head -c 1 < <(zcat "${SAMFILE}") )	
 	[ -s "${SAMFILE}" -a "${TESTSAM}" == "@" ] && echo "Looks like some reads got mapped okay." || echo "Mapping seems to have gone wrong, oops."
@@ -193,10 +193,10 @@ elif [ ${NOVOALIGNDIR} != "NA" ]
 then
 	if [ ${INDEXING} == "FALSE" ]
 	then
-		${NOVOALIGNDIR}novoindex ${REFDIR}/novoalignref.nix ${REFDIR}/${UNZIPREF}
+		${NOVOALIGNDIR}novoindex ${REFDIR}/novoalign_xref.nix ${REFDIR}/${UNZIPREF}
 	fi
 	${NOVOALIGNDIR}novoalign \
-	-d ${REFDIR}/novoalignref.nix \
+	-d ${REFDIR}/novoalign_xref.nix \
 	-f ${FASTQFILE1} ${FASTQFILE2} \
 	-o SAM > "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.sam"
 	gzip "${OUTDIR}${SAMPLENAME}/${OUTSAMPLENAME}_novoalign.sam"
@@ -218,7 +218,6 @@ ${PIPEDIR}parsing_mapped_reads_with_samtools.sh \
 -s ${SAMSAMPLENAME} \
 -i ${SAMFILE} \
 -r ${REFDIR}/${UNZIPREF} \
--u ${USETRIMMED} \
 -o ${OUTDIR}${SAMPLENAME}
 
 # Extracts mapping quality score using samtools
@@ -235,16 +234,16 @@ ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.depth.png
         [ -s "${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq" -a -s "${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.depth.png" ] && echo "Wonderful, parsing seems to have gone just right." || echo "Hmm, something seems to have gone wrong. Please check why your mapped reads havent been parsed correctly."
 
 
-if [ ${USETRIMMED} = "TRUE" ] && [ ${BWADIR} != "NA" ] || [ ${NOVOALIGNDIR} != "NA" ];
+if [ ${USETRIMMED} = "TRUE" ] && [ -f "${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.sam.gz" ];
 then
 	#### (3.1) Compare with raw data mapping stats - OPTIONAL
 	### (3.1.1) Compare number of mapped reads before/after trimming
-	RAW_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${SAMFILE})
+	RAW_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.sam.gz)
 	TRIM_MAPPED=$(${SAMTOOLSDIR}samtools view -c -F 4 ${SAMFILE})
 	echo "${SAMPLENAME},${RAW_MAPPED},${TRIM_MAPPED}" > ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mappedreads
 	### (3.1.2) Compare mapping quality scores before/after trimming
         Rscript --vanilla ${PIPEDIR}raw_vs_trimmed_mapped_read_distn_plot.R \
-        ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq \
+        ${OUTDIR}${SAMPLENAME}/${SAMPLENAME}.mapq \
         ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq \
         ${OUTDIR}${SAMPLENAME}/${SAMSAMPLENAME}.mapq.png
 fi

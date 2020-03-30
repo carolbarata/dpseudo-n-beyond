@@ -8,7 +8,7 @@ set -o pipefail
 # control and other mapping stats with samtools
 ##################################################
 
-USAGE="$(basename "$0") [-h] [ -d -g -j -b -s -i -r -u -o] --
+USAGE="$(basename "$0") [-h] [ -d -g -j -b -s -i -r -o] --
 
 where:\n
     -h show this help text\n
@@ -19,7 +19,6 @@ where:\n
     -s sample name\n
     -i full path to samfile input file\n
     -r full path to reference genome file\n
-    -u whether trimmed reads were mapped or not (TRUE/FALSE)\n
     -o full path to output directory"
 
 
@@ -53,10 +52,6 @@ case "$1" in
     REFGENOME="$2"
     shift 2
     ;;
-    -u|--usetrimmed)
-    USETRIMMED="$2"
-    shift 2
-    ;;
     -o|--outdirectory)
     OUTDIR="$2"
     shift 2
@@ -75,20 +70,11 @@ esac
 done
 
 ##### Set main variables #####
-if  [ ${USETRIMMED} = "TRUE" ]
-then
-	FINBAMEXT="_trim.nodup.sorted.realign.bam"
-	IDXEXT="_trim.nodup.sorted.bam.idxstats"
-	STATSEXT="_trim.nodup.sorted.bam.stats"
-	FLAGEXT="_trim.nodup.sorted.bam.flagstat"
-	COVEXT="_trim.nodup.sorted.bam.depth"
-else
-	FINBAMEXT=".nodup.sorted.realign.bam"
-	IDXEXT=".nodup.sorted.bam.idxstats"
-        STATSEXT=".nodup.sorted.bam.stats"
-        FLAGEXT=".nodup.sorted.bam.flagstat"
-        COVEXT=".nodup.sorted.bam.depth"
-fi
+FINBAMEXT=".nodup.sorted.realign.bam"
+IDXEXT=".nodup.sorted.bam.idxstats"
+STATSEXT=".nodup.sorted.bam.stats"
+FLAGEXT=".nodup.sorted.bam.flagstat"
+COVEXT=".nodup.sorted.bam.depth"
 
 BAMFILE=${OUTDIR}/${SAMPLENAME}_temp.bam
 MATE_BAMFILE=${OUTDIR}/${SAMPLENAME}_temp.fixmate.bam
