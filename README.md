@@ -34,21 +34,21 @@ S: `full_mapping_newref_submissionscript.sh`
 
 M: `main_mapping_pipeline.sh`
 
-	`trim_raw_reads_with_trimmomatic.sh #trims raw reads w/ Trimmomatic`
+Other scripts: `trim_raw_reads_with_trimmomatic.sh #trims raw reads w/ Trimmomatic`
 
-	`get_initial_and_trimmed_read_number.sh #counts no. of reads lost after trimming`
+`get_initial_and_trimmed_read_number.sh #counts no. of reads lost after trimming`
 
-	`get_initial_and_trimmed_read_lengths.sh #fetches read length distns before&after trimming`
+`get_initial_and_trimmed_read_lengths.sh #fetches read length distns before&after trimming`
 
-	`raw_vs_trimmed_read_length_plot.R #plots read length distns`
+`raw_vs_trimmed_read_length_plot.R #plots read length distns`
 
-	`parsing_mapped_reads_with_samtools.sh #parses sam file, realigns reads around indels, computes mapping stats`
+`parsing_mapped_reads_with_samtools.sh #parses sam file, realigns reads around indels, computes mapping stats`
 
-	`mapq_from_samfiles.sh #extracts mapping quality from sam file`
+`mapq_from_samfiles.sh #extracts mapping quality from sam file`
 
-	`coverage_distn_plot.R #plots read coverage distn`
+`coverage_distn_plot.R #plots read coverage distn`
 
-	`raw_vs_trimmed_mapped_read_distn_plot.R #plots raw vs trimmed alignment qual scores`
+`raw_vs_trimmed_mapped_read_distn_plot.R #plots raw vs trimmed alignment qual scores`
 ```
 $ ./main_mapping_pipeline.sh -h
     main_mapping_pipeline.sh [-h] [-i1 -i2 -u -dt -df -dm -dn -ds -dg -i -r -o] -- where:
