@@ -1,6 +1,6 @@
-# <i>Drosophila pseudoobscura</i> data analysis pipeline
+# <i>Drosophila pseudoobscura</i> mapping and variant calling pipeline
 
-This set of scripts includes raw read trimming, read mapping, mapped read parsing, variant called, variant filtering and cross-referencing across my <i>D. pseudoobscura</i> time series.
+This set of scripts includes raw read trimming, read mapping, mapped read parsing, variant calling, variant filtering and cross-referencing across my <i>D. pseudoobscura</i> time series.
 
 This pipeline was run on the St Andrews Bioinformatics cluster (marvin) and any submission scripts are only relevant for marvin users or other linux SGE-managed servers.
 
